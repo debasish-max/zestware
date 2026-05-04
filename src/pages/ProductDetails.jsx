@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import {
   ShoppingCart, ChevronLeft, ChevronRight,
   Minus, Plus, ShieldCheck, Truck, RefreshCw
@@ -12,6 +13,7 @@ export default function ProductDetails({ setToast }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { user } = useAuth();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +62,11 @@ export default function ProductDetails({ setToast }) {
   const visibleThumbs = images.slice(thumbOffset, thumbOffset + 4);
 
   const handleAddToCart = () => {
+    if (!user) {
+      setToast("Please login to add items to cart");
+      navigate("/login");
+      return;
+    }
     if (!selectedSize && product?.sizes?.length > 0) {
       setToast("Please select a size");
       return;
@@ -169,8 +176,8 @@ export default function ProductDetails({ setToast }) {
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={`min-w-[56px] h-12 flex items-center justify-center rounded-xl font-bold transition-all border-2 ${selectedSize === size
-                          ? 'bg-brand border-brand text-white shadow-lg shadow-brand/20'
-                          : 'bg-white border-gray-100 text-gray-400 hover:border-brand/20'
+                        ? 'bg-brand border-brand text-white shadow-lg shadow-brand/20'
+                        : 'bg-white border-gray-100 text-gray-400 hover:border-brand/20'
                         }`}
                     >
                       {size}

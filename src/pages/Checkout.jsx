@@ -1,6 +1,6 @@
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Loader2, Phone, MapPin, User, ChevronLeft, CreditCard, QrCode } from "lucide-react";
@@ -18,6 +18,13 @@ export default function Checkout({ setToast }) {
 
   const deliveryFee = 30;
   const finalTotal = total + deliveryFee;
+
+  useEffect(() => {
+    if (!user) {
+      setToast("Please login to access checkout");
+      navigate("/login");
+    }
+  }, [user, navigate, setToast]);
 
   const handleProceedToPayment = () => {
     if (!customerName || !contact || !address) {

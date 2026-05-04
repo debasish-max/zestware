@@ -2,8 +2,10 @@ import { useCart } from "../context/CartContext";
 import CartItem from "../components/CartItem";
 import { ShoppingBag, ArrowRight, XCircle, ShoppingCart } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export default function Cart() {
+export default function Cart({ setToast }) {
+  const { user } = useAuth();
   const { cart, total, clearCart } = useCart();
   const navigate = useNavigate();
   const deliveryFee = cart.length > 0 ? 30 : 0;
@@ -75,7 +77,14 @@ export default function Cart() {
             </div>
 
             <button
-              onClick={() => navigate("/checkout")}
+              onClick={() => {
+                if (!user) {
+                  setToast("Please login to proceed to checkout");
+                  navigate("/login");
+                  return;
+                }
+                navigate("/checkout");
+              }}
               className="w-full bg-brand text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:opacity-90 transition-opacity shadow-lg shadow-brand/20 group"
             >
               Checkout
