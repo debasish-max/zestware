@@ -2,7 +2,7 @@
 
 ZESTWARE is a high-end, production-ready e-commerce platform for modern apparel and streetwear. Built with a focus on premium aesthetics, speed, and a seamless user experience for both customers and administrators.
 
-![ZESTWARE Preview](https://via.placeholder.com/800x400?text=ZESTWARE+Apparel+Store)
+![ZESTWARE Preview]([https://via.placeholder.com/800x400?text=ZESTWARE+Apparel+Store](https://zestware.onrender.com/))
 
 ## 🚀 Features
 
