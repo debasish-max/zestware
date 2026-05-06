@@ -26,3 +26,27 @@ export const getProductImage = (img) => {
   
   return 'https://via.placeholder.com/400?text=No+Image';
 };
+
+export const getAllProductImages = (img) => {
+  if (!img) return [];
+  
+  if (Array.isArray(img)) {
+    return img;
+  }
+  
+  if (typeof img === 'string') {
+    if (img.startsWith('[') && img.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(img);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+      } catch (e) {
+        return [img];
+      }
+    }
+    return [img];
+  }
+  
+  return [];
+};

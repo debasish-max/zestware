@@ -3,15 +3,17 @@ import { supabase } from '../../lib/supabase';
 import {
     Package, Clock, CheckCircle2, XCircle,
     Search, Filter, MapPin, User, ArrowLeft, Phone,
-    Loader2
+    Loader2, Image as ImageIcon, X
 } from 'lucide-react';
 import { format, parseISO, subDays } from 'date-fns';
+import { getProductImage, getAllProductImages } from '../../utils/imageUtils';
 
 export default function AdminOrders({ setToast }) {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [previewImages, setPreviewImages] = useState(null);
 
     const statusConfig = {
         pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700', bar: 'bg-yellow-500' },
@@ -269,16 +271,35 @@ export default function AdminOrders({ setToast }) {
                                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-4 pl-1">Items Ordered</h4>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             {(Array.isArray(order.items) ? order.items : []).map((item, idx) => (
-                                                <div key={idx} className="bg-gray-50/50 border border-gray-100 p-4 rounded-2xl flex items-center gap-4 hover:bg-white hover:border-brand/20 transition-all group/item">
-                                                    <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center font-black text-brand shadow-sm group-hover/item:scale-110 transition-transform">
-                                                        {item.qty}
+                                                <div key={idx} className="bg-gray-50/50 border border-gray-100 p-3 rounded-2xl flex items-center gap-4 hover:bg-white hover:border-brand/20 transition-all group/item shadow-sm">
+                                                    {/* Product Image */}
+                                                    <div
+                                                        className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0 bg-white cursor-zoom-in relative group/img-link"
+                                                        onClick={() => setPreviewImages(getAllProductImages(item.img))}
+                                                    >
+                                                        <img
+                                                            src={getProductImage(item.img)}
+                                                            alt={item.name}
+                                                            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                        />
+                                                        {getAllProductImages(item.img).length > 1 && (
+                                                            <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[8px] font-black px-1 py-0.5 rounded-md flex items-center gap-1">
+                                                                <ImageIcon size={8} />
+                                                                {getAllProductImages(item.img).length}
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 bg-black/0 group-hover/img-link:bg-black/10 transition-colors" />
                                                     </div>
+
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-bold text-gray-800 truncate">{item.name}</p>
-                                                        <div className="flex items-center gap-2 mt-0.5">
-                                                            <p className="text-[10px] font-bold text-gray-400 uppercase">UNIT PRICE: ₹{item.price}</p>
+                                                        <p className="text-sm font-black text-gray-800 truncate mb-1">{item.name}</p>
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <span className="text-[10px] font-black bg-brand text-white px-2 py-0.5 rounded-lg shadow-sm shadow-brand/20">
+                                                                QTY: {item.qty}
+                                                            </span>
+                                                            <p className="text-[10px] font-bold text-gray-400 uppercase">₹{item.price}</p>
                                                             {item.selectedSize && (
-                                                                <span className="text-[9px] font-black bg-brand/5 text-brand px-1.5 py-0.5 rounded-md border border-brand/10">
+                                                                <span className="text-[9px] font-black bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-md border border-gray-200">
                                                                     SIZE: {item.selectedSize}
                                                                 </span>
                                                             )}
@@ -302,6 +323,38 @@ export default function AdminOrders({ setToast }) {
                     )}
                 </div>
             </div>
+
+            {/* Image Preview Modal */}
+            {previewImages && (
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-in fade-in duration-200"
+                    onClick={() => setPreviewImages(null)}
+                >
+                    <button
+                        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all hover:rotate-90 z-[101]"
+                        onClick={() => setPreviewImages(null)}
+                    >
+                        <X size={24} />
+                    </button>
+
+                    <div className="max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center gap-8" onClick={e => e.stopPropagation()}>
+                        <div className="w-full overflow-y-auto custom-scrollbar p-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {previewImages.map((img, idx) => (
+                                    <div key={idx} className="aspect-square bg-gray-900 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl group/img relative">
+                                        <img
+                                            src={img}
+                                            alt={`Preview ${idx + 1}`}
+                                            className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700"
+                                        />
+                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

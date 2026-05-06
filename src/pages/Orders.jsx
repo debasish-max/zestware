@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { 
-    Package, Clock, Search, MapPin, Inbox
+    Package, Clock, Search, MapPin, Inbox, X, Image as ImageIcon
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { getProductImage, getAllProductImages } from '../utils/imageUtils';
 
 export default function Orders({ setToast }) {
     const { user } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [previewImages, setPreviewImages] = useState(null);
 
     const statusConfig = {
         pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700', bar: 'bg-yellow-500' },
@@ -104,18 +106,42 @@ export default function Orders({ setToast }) {
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-col gap-3">
                                             {order.items.map((item, idx) => (
-                                                <div key={idx} className="bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-xl text-sm font-bold text-gray-700 flex flex-col gap-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-brand">{item.qty}x</span>
-                                                        {item.name}
+                                                <div key={idx} className="flex items-center gap-4 group/item">
+                                                    {/* Product Image */}
+                                                        <div 
+                                                            className="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 flex-shrink-0 cursor-zoom-in group-hover/item:border-brand/30 transition-all shadow-sm relative"
+                                                            onClick={() => setPreviewImages(getAllProductImages(item.img))}
+                                                        >
+                                                            <img 
+                                                                src={getProductImage(item.img)} 
+                                                                alt={item.name} 
+                                                                className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                            />
+                                                            {getAllProductImages(item.img).length > 1 && (
+                                                                <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[8px] font-black px-1 py-0.5 rounded-md flex items-center gap-1">
+                                                                    <ImageIcon size={8} />
+                                                                    {getAllProductImages(item.img).length}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-base md:text-lg font-black text-gray-800 leading-tight mb-1 truncate">
+                                                            {item.name}
+                                                        </h3>
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                                QTY: {item.qty}
+                                                            </span>
+                                                            {item.selectedSize && (
+                                                                <span className="text-[10px] font-black bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md border border-gray-200 uppercase">
+                                                                    SIZE: {item.selectedSize}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    {item.selectedSize && (
-                                                        <span className="text-[9px] font-black bg-brand/5 text-brand px-1.5 py-0.5 rounded-md border border-brand/10 w-fit">
-                                                            SIZE: {item.selectedSize}
-                                                        </span>
-                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -144,6 +170,38 @@ export default function Orders({ setToast }) {
                     )}
                 </div>
             </div>
+
+            {/* Image Preview Modal */}
+            {previewImages && (
+                <div 
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-in fade-in duration-200"
+                    onClick={() => setPreviewImages(null)}
+                >
+                    <button 
+                        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-all hover:rotate-90 z-[101]"
+                        onClick={() => setPreviewImages(null)}
+                    >
+                        <X size={24} />
+                    </button>
+                    
+                    <div className="max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center gap-8" onClick={e => e.stopPropagation()}>
+                        <div className="w-full overflow-y-auto custom-scrollbar p-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {previewImages.map((img, idx) => (
+                                    <div key={idx} className="aspect-square bg-gray-900 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl group/img relative">
+                                        <img 
+                                            src={img} 
+                                            alt={`Preview ${idx + 1}`} 
+                                            className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700"
+                                        />
+                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
