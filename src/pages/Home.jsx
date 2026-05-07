@@ -1,7 +1,7 @@
 import Hero from "../components/Hero";
 import FeaturedShowcase from "../components/FeaturedShowcase";
 import ProductCard from "../components/ProductCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Search, ChevronLeft, ChevronRight, MessageSquare, Info, Loader2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 
@@ -11,6 +11,7 @@ export default function Home({ setToast }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 8;
+  const collectionRef = useRef(null);
 
   useEffect(() => {
     fetchProducts();
@@ -33,6 +34,13 @@ export default function Home({ setToast }) {
     }
   };
 
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    if (collectionRef.current) {
+      collectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -47,7 +55,7 @@ export default function Home({ setToast }) {
       <Hero />
       <FeaturedShowcase />
 
-      <section id="collection" className="max-w-6xl mx-auto px-4 py-20">
+      <section ref={collectionRef} id="collection" className="max-w-6xl mx-auto px-4 py-20">
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <div>
@@ -94,7 +102,7 @@ export default function Home({ setToast }) {
         {filtered.length > perPage && (
           <div className="flex justify-center items-center gap-6 mt-12">
             <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() => handlePageChange(Math.max(1, page - 1))}
               disabled={page === 1}
               className="p-3 bg-white border border-gray-100 text-gray-600 rounded-2xl hover:bg-brand hover:text-white disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-gray-600 shadow-sm transition-all active:scale-90"
             >
@@ -105,9 +113,7 @@ export default function Home({ setToast }) {
             </span>
             <button
               onClick={() =>
-                setPage((p) =>
-                  p * perPage < filtered.length ? p + 1 : p
-                )
+                handlePageChange(page * perPage < filtered.length ? page + 1 : page)
               }
               disabled={page * perPage >= filtered.length}
               className="p-3 bg-white border border-gray-100 text-gray-600 rounded-2xl hover:bg-brand hover:text-white disabled:opacity-30 disabled:hover:bg-white disabled:hover:text-gray-600 shadow-sm transition-all active:scale-90"
@@ -125,7 +131,7 @@ export default function Home({ setToast }) {
           <div className="w-16 h-16 bg-brand/10 rounded-2xl flex items-center justify-center mx-auto mb-8 animate-bounce">
             <Info className="text-brand" size={32} />
           </div>
-          <h2 className="text-5xl font-black text-gray-800 mb-8 tracking-tighter">About ZESTWARE</h2>
+          <h2 className="text-5xl font-black text-gray-800 mb-8 tracking-tighter">About ZESTWEAR</h2>
           <p className="text-xl text-gray-600 leading-relaxed font-medium">
             We provide premium quality clothing designed with a focus on style, comfort, and durability.
             Every garment is carefully selected and crafted to ensure you look and feel your best,

@@ -49,7 +49,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto flex justify-between items-center px-4 py-3 md:py-4">
         <Link to="/" className="group flex items-center">
           <h1 className="text-2xl md:text-3xl font-black text-brand tracking-tighter hover:scale-105 transition-transform">
-            ZESTWARE
+            ZESTWEAR
           </h1>
         </Link>
 

@@ -32,7 +32,7 @@ export default function Hero() {
           <div className="space-y-4">
             <h2 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9]">
               Premium <br />
-              <span className="text-brand">ZESTWARE</span>
+              <span className="text-brand">ZESTWEAR</span>
             </h2>
             <p className="text-lg md:text-xl text-gray-500 font-medium leading-relaxed max-w-lg mx-auto md:mx-0">
               Elevate your style with our premium collection of streetwear and essentials.

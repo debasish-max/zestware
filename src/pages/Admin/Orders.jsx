@@ -112,11 +112,9 @@ export default function AdminOrders({ setToast }) {
             ));
 
             setToast(`Order updated to ${newStatus.toUpperCase()}!`);
-            setTimeout(() => setToast(''), 3000);
         } catch (error) {
             console.error('Error updating order:', error.message);
             setToast('Failed to update order status');
-            setTimeout(() => setToast(''), 3000);
         }
     };
 

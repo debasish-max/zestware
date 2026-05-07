@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "../../lib/supabase";
 import {
   Package, Plus, Trash2, Image as ImageIcon,
@@ -12,6 +12,7 @@ export default function AdminProducts({ setToast }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -83,20 +84,17 @@ export default function AdminProducts({ setToast }) {
     });
 
     setImageFiles(prev => [...prev, ...validFiles]);
+    // Reset input value so same file can be selected again
+    if (e.target) e.target.value = "";
   };
 
   const removeImage = (index) => {
-    // If it's an existing image (string URL), remove from existingImages
-    // If it's a new preview (data URL or object URL), it corresponds to an imageFile
-
     const previewToRemove = imagePreviews[index];
     const isExisting = typeof previewToRemove === 'string' && !previewToRemove.startsWith('data:');
 
     if (isExisting) {
       setExistingImages(prev => prev.filter(url => url !== previewToRemove));
     } else {
-      // Find the index in imageFiles
-      // This is tricky because imagePreviews contains both existing and new
       const newPreviews = imagePreviews.filter(p => typeof p !== 'string' || p.startsWith('data:'));
       const newIdx = newPreviews.indexOf(previewToRemove);
       setImageFiles(prev => prev.filter((_, i) => i !== newIdx));
@@ -180,11 +178,14 @@ export default function AdminProducts({ setToast }) {
   };
 
   const resetForm = () => {
-    setForm({ name: "", price: "", description: "Premium cotton streetwear", sizes: [] });
+    setForm({ name: "", price: "", description: "", sizes: [] });
     setImageFiles([]);
     setImagePreviews([]);
     setExistingImages([]);
     setEditingProduct(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const startEdit = (product) => {
@@ -390,6 +391,7 @@ export default function AdminProducts({ setToast }) {
                         accept="image/*"
                         multiple
                         className="hidden"
+                        ref={fileInputRef}
                         onChange={handleFileChange}
                       />
                     </label>

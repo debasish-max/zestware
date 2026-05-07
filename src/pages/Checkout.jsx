@@ -29,7 +29,6 @@ export default function Checkout({ setToast }) {
   const handleProceedToPayment = () => {
     if (!customerName || !contact || !address) {
       setToast("Please fill in all billing details");
-      setTimeout(() => setToast(""), 3000);
       return;
     }
 

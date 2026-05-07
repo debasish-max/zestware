@@ -30,7 +30,6 @@ export default function AdminDashboard({ setToast }) {
                 } else if (payload.eventType === 'DELETE') {
                     setOrders(prev => prev.filter(order => order.id !== payload.old.id));
                 }
-                setTimeout(() => setToast(''), 3000);
             })
             .subscribe();
 

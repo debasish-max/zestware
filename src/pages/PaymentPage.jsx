@@ -2,8 +2,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { supabase } from "../lib/supabase";
-import { 
-  ChevronLeft, CreditCard, QrCode, Copy, 
+import {
+  ChevronLeft, CreditCard, QrCode, Copy,
   CheckCircle2, Loader2, ShieldCheck, Smartphone
 } from "lucide-react";
 
@@ -33,7 +33,6 @@ export default function PaymentPage({ setToast }) {
       setToast("UPI ID copied to clipboard!");
       setTimeout(() => {
         setCopied(false);
-        setToast("");
       }, 2000);
     }
   };
@@ -57,7 +56,6 @@ export default function PaymentPage({ setToast }) {
       console.error("Error saving order:", error);
       if (setToast) {
         setToast(`Error: ${error.message || "Failed to save order"}`);
-        setTimeout(() => setToast(""), 4000);
       }
     } finally {
       setIsSubmitting(false);
@@ -69,7 +67,7 @@ export default function PaymentPage({ setToast }) {
       <div className="max-w-2xl mx-auto px-4">
         {/* Header */}
         <div className="mb-12 text-center">
-          <button 
+          <button
             onClick={() => navigate("/checkout")}
             className="inline-flex items-center gap-2 text-gray-500 font-bold hover:text-brand transition-colors mb-6"
           >
@@ -116,19 +114,19 @@ export default function PaymentPage({ setToast }) {
                 <Smartphone size={24} />
               </div>
               <h3 className="font-black text-gray-800 mb-4">Pay via UPI ID</h3>
-              
+
               <div className="w-full space-y-4">
                 <div className="p-5 bg-gray-50 rounded-2xl border border-gray-100 text-center relative overflow-hidden group">
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Our Official UPI ID</p>
                   <p className="text-xl font-black text-gray-800 select-all">{upiId}</p>
-                  <button 
+                  <button
                     onClick={copyToClipboard}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-sm border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-brand hover:scale-105 transition-all"
                   >
                     {copied ? <CheckCircle2 size={18} className="text-green-500" /> : <Copy size={18} />}
                   </button>
                 </div>
-                
+
                 <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100 flex items-center gap-4">
                   <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white shrink-0">
                     <Smartphone size={20} />

@@ -44,7 +44,7 @@ export default function FeaturedShowcase() {
     });
   }, { scope: containerRef });
 
-  const marqueeText = "ZESTWARE • PREMIUM APPAREL • STREETWEAR ESSENTIALS • MODERN LUXURY • ";
+  const marqueeText = "ZESTWEAR • PREMIUM APPAREL • STREETWEAR ESSENTIALS • MODERN LUXURY • ";
 
   return (
     <section ref={containerRef} className="py-32 bg-black overflow-hidden text-white">
@@ -60,7 +60,7 @@ export default function FeaturedShowcase() {
         <p className="fade-in-text text-sm font-black uppercase tracking-[0.5em] text-gray-500 mb-8">
           The New Standard
         </p>
-        
+
         <h2 className="reveal-text text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-12">
           {["STYLE", "BEYOND", "BOUNDARIES"].map((word, i) => (
             <span key={i} className="inline-block mr-4 md:mr-8 last:mr-0">
@@ -71,7 +71,7 @@ export default function FeaturedShowcase() {
 
         <div className="max-w-2xl mx-auto">
           <p className="fade-in-text text-lg md:text-xl text-gray-400 font-medium leading-relaxed">
-            We don't just make clothes. We curate experiences. 
+            We don't just make clothes. We curate experiences.
             Designed for the bold, the ambitious, and those who define their own path.
           </p>
         </div>
