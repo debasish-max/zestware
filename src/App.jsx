@@ -15,7 +15,6 @@ import Toast from "./components/Toast";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import AdminProducts from "./pages/Admin/Products";
 import Checkout from "./pages/Checkout";
-import PaymentPage from "./pages/PaymentPage";
 import ProductDetails from "./pages/ProductDetails";
 import { useState, useEffect } from "react";
 
@@ -32,6 +31,7 @@ function AppContent() {
   }, [toast]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setToast("");
   }, [location.pathname]);
 
@@ -61,7 +61,6 @@ function AppContent() {
         <Route path="/signup" element={<Signup setToast={setToast} />} />
         <Route path="/orders" element={<Orders setToast={setToast} />} />
         <Route path="/checkout" element={<Checkout setToast={setToast} />} />
-        <Route path="/payment" element={<PaymentPage setToast={setToast} />} />
         <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/product/:id" element={<ProductDetails setToast={setToast} />} />
 
