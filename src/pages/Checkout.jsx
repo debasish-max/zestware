@@ -26,25 +26,77 @@ export default function Checkout({ setToast }) {
     }
   }, [user, navigate, setToast]);
 
-  const handleProceedToPayment = () => {
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleCheckout = async () => {
     if (!customerName || !contact || !address) {
       setToast("Please fill in all billing details");
       return;
     }
 
-    // Pass data to payment page
-    navigate("/payment", {
-      state: {
-        orderData: {
-          customer_name: customerName,
-          contact_number: contact,
-          address: address,
-          items: cart,
-          total_amount: finalTotal,
-          user_id: user?.id || null,
+    const res = await loadRazorpay();
+    if (!res) {
+      setToast("Razorpay SDK failed to load. Are you online?");
+      return;
+    }
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter your Key ID here
+      amount: finalTotal * 100, // Amount in paise
+      currency: "INR",
+      name: "ZESTWARE",
+      description: "Premium Streetwear Order",
+      handler: async function (response) {
+        // Payment Success Handler
+        setIsSubmitting(true);
+        try {
+          const orderData = {
+            customer_name: customerName,
+            contact_number: contact,
+            address: address,
+            items: cart,
+            total_amount: finalTotal,
+            user_id: user?.id || null,
+            status: "confirmed",
+            created_at: new Date().toISOString(),
+            payment_id: response.razorpay_payment_id,
+          };
+
+          const { error } = await supabase.from("orders").insert([orderData]);
+          if (error) throw error;
+
+          clearCart();
+          navigate("/order-success");
+          setToast("Order placed successfully!");
+        } catch (error) {
+          console.error("Error saving order:", error);
+          setToast(`Error: ${error.message || "Failed to save order"}`);
+        } finally {
+          setIsSubmitting(false);
         }
-      }
-    });
+      },
+      prefill: {
+        name: customerName,
+        contact: contact,
+      },
+      notes: {
+        address: address,
+      },
+      theme: {
+        color: "#000000",
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
 
   if (cart.length === 0) {
@@ -121,9 +173,9 @@ export default function Checkout({ setToast }) {
                 <div key={item.name} className="flex justify-between items-center py-2">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex-shrink-0">
-                      <img 
-                        src={getProductImage(item.img)} 
-                        alt={item.name} 
+                      <img
+                        src={getProductImage(item.img)}
+                        alt={item.name}
                         className="w-full h-full object-cover"
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=No+Image'; }}
                       />
@@ -165,24 +217,37 @@ export default function Checkout({ setToast }) {
           <div className="bg-brand/5 border border-brand/10 rounded-[32px] p-8">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 bg-brand/10 rounded-2xl flex items-center justify-center shrink-0 text-brand">
-                <QrCode size={24} />
+                <CreditCard size={24} />
               </div>
               <div>
-                <h3 className="text-xl font-black text-gray-800">Online Payment Only</h3>
+                <h3 className="text-xl font-black text-gray-800">Secure Online Payment</h3>
                 <p className="text-gray-600 font-medium mt-1 leading-relaxed">
-                  To ensure fast processing, we currently only accept online payments.
-                  In the next step, you'll be able to scan a QR code or use a Google Pay link to complete your transaction.
+                  We process payments securely via Razorpay. You can pay using UPI, Credit/Debit Cards, or Netbanking.
+                  Your order will be confirmed immediately after successful payment.
                 </p>
               </div>
             </div>
 
             <button
-              onClick={handleProceedToPayment}
-              className="w-full bg-brand text-white py-6 rounded-2xl font-black text-xl shadow-xl shadow-brand/20 hover:bg-gray-900 transition-all active:scale-[0.98] flex items-center justify-center gap-3"
+              onClick={handleCheckout}
+              disabled={isSubmitting}
+              className="w-full bg-brand text-white py-6 rounded-2xl font-black text-xl shadow-xl shadow-brand/20 hover:bg-gray-900 transition-all active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Proceed to Payment
-              <CreditCard size={24} />
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" size={24} />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Pay & Complete Order
+                  <CreditCard size={24} />
+                </>
+              )}
             </button>
+            <p className="text-center text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mt-6">
+              Encrypted & Secure Payment via Razorpay
+            </p>
           </div>
         </div>
       </div>

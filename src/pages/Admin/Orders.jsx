@@ -5,7 +5,7 @@ import {
     Search, Filter, MapPin, User, ArrowLeft, Phone,
     Loader2, Image as ImageIcon, X
 } from 'lucide-react';
-import { format, parseISO, subDays } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { getProductImage, getAllProductImages } from '../../utils/imageUtils';
 
 export default function AdminOrders({ setToast }) {
@@ -17,17 +17,14 @@ export default function AdminOrders({ setToast }) {
 
     const statusConfig = {
         pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-700', bar: 'bg-yellow-500' },
-        cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-700', bar: 'bg-red-500' },
+        confirmed: { label: 'Confirmed', color: 'bg-green-100 text-green-700', bar: 'bg-green-500' },
         'out for delivery': { label: 'Out for Delivery', color: 'bg-blue-100 text-blue-700', bar: 'bg-blue-500' },
         delivered: { label: 'Delivered', color: 'bg-green-100 text-green-700', bar: 'bg-green-500' },
-        // Fallbacks for legacy statuses
-        confirmed: { label: 'Confirmed', color: 'bg-green-100 text-green-700', bar: 'bg-green-500' },
-        rejected: { label: 'Rejected', color: 'bg-red-100 text-red-700', bar: 'bg-red-500' }
+        cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-700', bar: 'bg-red-500' }
     };
 
     useEffect(() => {
         const init = async () => {
-            await cleanupOldOrders();
             await fetchOrders();
         };
         init();
@@ -57,26 +54,6 @@ export default function AdminOrders({ setToast }) {
         };
     }, []);
 
-    const cleanupOldOrders = async () => {
-        try {
-            const thirtyDaysAgo = subDays(new Date(), 30).toISOString();
-
-            // Delete orders that are confirmed/rejected AND older than 30 days
-            const { error, count } = await supabase
-                .from('orders')
-                .delete({ count: 'exact' })
-                .in('status', ['delivered', 'cancelled', 'rejected'])
-                .lt('created_at', thirtyDaysAgo);
-
-            if (error) throw error;
-
-            if (count > 0) {
-                console.log(`[Auto-Cleanup] Deleted ${count} orders older than 30 days.`);
-            }
-        } catch (error) {
-            console.error('Error during auto-cleanup:', error.message);
-        }
-    };
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -210,16 +187,11 @@ export default function AdminOrders({ setToast }) {
                                             className={`w-full py-2.5 px-4 rounded-xl font-bold text-[11px] uppercase tracking-widest shadow-sm outline-none border-2 transition-all cursor-pointer ${(statusConfig[order.status] || statusConfig.pending).color
                                                 } border-transparent focus:border-brand/20`}
                                         >
-                                            {Object.keys(statusConfig).filter(s => !['confirmed', 'rejected'].includes(s)).map(status => (
+                                            {Object.keys(statusConfig).map(status => (
                                                 <option key={status} value={status} className="bg-white text-gray-800">
                                                     {statusConfig[status].label}
                                                 </option>
                                             ))}
-                                            {['confirmed', 'rejected'].includes(order.status) && (
-                                                <option value={order.status} className="bg-white text-gray-800">
-                                                    {statusConfig[order.status].label}
-                                                </option>
-                                            )}
                                         </select>
                                     </div>
                                 </div>
