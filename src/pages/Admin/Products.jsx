@@ -70,8 +70,8 @@ export default function AdminProducts({ setToast }) {
     const validFiles = [];
 
     files.forEach(file => {
-      if (file.size > 2 * 1024 * 1024) {
-        setToast(`${file.name} is too large. Max 2MB.`);
+      if (file.size > 15 * 1024 * 1024) {
+        setToast(`${file.name} is too large. Max 15MB.`);
         return;
       }
       validFiles.push(file);
@@ -385,7 +385,7 @@ export default function AdminProducts({ setToast }) {
                       <p className="text-xs font-bold text-gray-500 group-hover:text-brand transition-colors">
                         {imagePreviews.length > 0 ? "Add more images" : "Select from device"}
                       </p>
-                      <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Max 2MB per image</p>
+                      <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Max 15MB per image</p>
                       <input
                         type="file"
                         accept="image/*"
