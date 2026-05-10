@@ -36,10 +36,19 @@ export default function Home({ setToast }) {
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
-    if (collectionRef.current) {
-      collectionRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
   };
+
+  useEffect(() => {
+    // Scroll to collection when page changes
+    if (collectionRef.current) {
+      const offset = 80;
+      const top = collectionRef.current.offsetTop - offset;
+      window.scrollTo({
+        top: top,
+        behavior: 'smooth'
+      });
+    }
+  }, [page]);
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -55,7 +64,7 @@ export default function Home({ setToast }) {
       <Hero />
       <FeaturedShowcase />
 
-      <section ref={collectionRef} id="collection" className="max-w-6xl mx-auto px-4 py-20">
+      <section ref={collectionRef} id="collection" className="max-w-7xl mx-auto px-4 py-20">
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <div>

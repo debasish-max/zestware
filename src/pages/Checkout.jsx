@@ -49,10 +49,10 @@ export default function Checkout({ setToast }) {
     }
 
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter your Key ID here
-      amount: finalTotal * 100, // Amount in paise
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: finalTotal * 100,
       currency: "INR",
-      name: "ZESTWARE",
+      name: "ZESTWEAR",
       description: "Premium Streetwear Order",
       handler: async function (response) {
         // Payment Success Handler
@@ -65,7 +65,7 @@ export default function Checkout({ setToast }) {
             items: cart,
             total_amount: finalTotal,
             user_id: user?.id || null,
-            status: "confirmed",
+            status: "pending",
             created_at: new Date().toISOString(),
             payment_id: response.razorpay_payment_id,
           };

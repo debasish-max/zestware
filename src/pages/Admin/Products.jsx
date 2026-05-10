@@ -254,7 +254,7 @@ export default function AdminProducts({ setToast }) {
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
           <div>
             <Link to="/admin" className="text-brand flex items-center gap-1 text-sm font-bold mb-2 hover:underline">

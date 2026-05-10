@@ -120,7 +120,7 @@ export default function AdminOrders({ setToast }) {
 
     return (
         <div className="min-h-screen bg-white p-4 md:p-8">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-black text-gray-800 flex items-center gap-3">

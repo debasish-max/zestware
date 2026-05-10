@@ -1,4 +1,4 @@
-import { Github, Instagram, Twitter, Mail, MapPin, Phone, Globe } from 'lucide-react';
+import { MessageCircle, Instagram, Twitter, Mail, MapPin, Phone, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -27,15 +27,15 @@ export default function Footer() {
                         </a>
                         <a href="" className="flex items-center gap-3 text-gray-400 hover:text-white transition-all group font-bold text-sm w-fit">
                             <div className="w-8 h-8 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center group-hover:border-white group-hover:bg-white group-hover:text-black transition-all">
-                                <Twitter size={16} />
+                                <MessageCircle size={16} />
                             </div>
-                            Twitter
+                            WhatsApp Community
                         </a>
                         <a href="" className="flex items-center gap-3 text-gray-400 hover:text-white transition-all group font-bold text-sm w-fit">
                             <div className="w-8 h-8 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center group-hover:border-white group-hover:bg-white group-hover:text-black transition-all">
-                                <Github size={16} />
+                                <Twitter size={16} />
                             </div>
-                            Community
+                            Twitter
                         </a>
                     </div>
                 </div>
