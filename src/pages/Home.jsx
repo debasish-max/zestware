@@ -12,6 +12,8 @@ export default function Home({ setToast }) {
   const [page, setPage] = useState(1);
   const perPage = 8;
   const collectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const prevPage = useRef(page);
 
   useEffect(() => {
     fetchProducts();
@@ -39,16 +41,26 @@ export default function Home({ setToast }) {
   };
 
   useEffect(() => {
-    // Scroll to collection when page changes
-    if (collectionRef.current) {
-      const offset = 80;
-      const top = collectionRef.current.offsetTop - offset;
-      window.scrollTo({
-        top: top,
-        behavior: 'smooth'
-      });
+    // Only scroll if the page number has actually changed
+    if (prevPage.current !== page) {
+      prevPage.current = page;
+
+      if (headerRef.current) {
+        const timer = setTimeout(() => {
+          const offset = 90;
+          const elementPosition = headerRef.current.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }, 100);
+        return () => clearTimeout(timer);
+      }
     }
   }, [page]);
+
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -68,7 +80,7 @@ export default function Home({ setToast }) {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <div>
-            <h2 className="text-4xl font-black text-gray-800 tracking-tight mb-2">Our Collection</h2>
+            <h2 ref={headerRef} className="text-4xl font-black text-gray-800 tracking-tight mb-2">Our Collection</h2>
             <p className="text-gray-500 font-medium">Premium quality apparel for your everyday life</p>
           </div>
 

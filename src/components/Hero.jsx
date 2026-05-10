@@ -16,7 +16,12 @@ export default function Hero() {
   const scrollToProducts = () => {
     const section = document.querySelector("#collection");
     if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
+      const offset = 80;
+      const top = section.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({
+        top: top,
+        behavior: "smooth"
+      });
     }
   };
 
@@ -31,7 +36,6 @@ export default function Hero() {
         <div className="space-y-8 text-center md:text-left">
           <div className="space-y-4">
             <h2 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9]">
-              Premium <br />
               <span className="text-brand">ZESTWEAR</span>
             </h2>
             <p className="text-lg md:text-xl text-gray-500 font-medium leading-relaxed max-w-lg mx-auto md:mx-0">
@@ -49,7 +53,7 @@ export default function Hero() {
               <ShoppingBag className="group-hover:translate-x-1 transition-transform" size={20} />
             </button>
             <button
-              onClick={() => document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={scrollToProducts}
               className="flex items-center gap-2 text-gray-600 font-bold hover:text-brand transition-colors px-6 py-4"
             >
               Explore Collection
