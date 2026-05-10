@@ -16,6 +16,9 @@ import OrderSuccessPage from "./pages/OrderSuccessPage";
 import AdminProducts from "./pages/Admin/Products";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
+import Terms from "./pages/Terms";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Contact from "./pages/Contact";
 import { useState, useEffect } from "react";
 
 function AppContent() {
@@ -63,6 +66,9 @@ function AppContent() {
         <Route path="/checkout" element={<Checkout setToast={setToast} />} />
         <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/product/:id" element={<ProductDetails setToast={setToast} />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Admin Routes */}
         <Route

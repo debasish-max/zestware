@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function Footer() {
     return (
         <footer className="bg-gray-950 text-white pt-20 pb-10 px-4 md:px-8 border-t border-gray-900">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-24 mb-16">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                 {/* Brand Section */}
                 <div className="space-y-6">
                     <h2 className="text-4xl font-black tracking-tighter uppercase italic">
@@ -37,6 +37,17 @@ export default function Footer() {
                             </div>
                             Twitter
                         </a>
+                    </div>
+                </div>
+
+                {/* Explore Section */}
+                <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest mb-8 text-gray-500">Explore</h3>
+                    <div className="space-y-4 flex flex-col">
+                        <Link to="/" className="text-gray-400 hover:text-brand transition-colors text-sm font-bold">Home</Link>
+                        <Link to="/contact" className="text-gray-400 hover:text-brand transition-colors text-sm font-bold">Contact Us</Link>
+                        <Link to="/terms" className="text-gray-400 hover:text-brand transition-colors text-sm font-bold">Terms & Conditions</Link>
+                        <Link to="/privacy-policy" className="text-gray-400 hover:text-brand transition-colors text-sm font-bold">Privacy Policy</Link>
                     </div>
                 </div>
 
