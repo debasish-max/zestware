@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
     Package, Clock, Search, MapPin, Inbox, X, Image as ImageIcon
 } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import { getProductImage, getAllProductImages } from '../utils/imageUtils';
 
 export default function Orders({ setToast }) {
@@ -74,6 +74,19 @@ export default function Orders({ setToast }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getDeliveryInfo = (order) => {
+        const { status, created_at } = order;
+        if (!created_at) return null;
+        const deliveryDate = format(addDays(parseISO(created_at), 10), "dd MMM yyyy");
+
+        if (status === 'pending' || status === 'confirmed') {
+            return `Estimated Delivery: ${deliveryDate}`;
+        } else if (status === 'out for delivery') {
+            return "Your order is on its way";
+        }
+        return null;
     };
 
 
@@ -149,11 +162,19 @@ export default function Orders({ setToast }) {
                                     </div>
                                 </div>
 
-                                <div className="md:text-right flex flex-row md:flex-col justify-between items-center md:items-end border-t md:border-t-0 pt-4 md:pt-0 border-gray-50">
-                                    <div>
+                                <div className="md:text-right flex flex-col justify-between border-t md:border-t-0 pt-4 md:pt-0 border-gray-50">
+                                    <div className="mb-4">
                                         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Total Paid</p>
                                         <p className="text-2xl font-black text-brand">₹{order.total_amount}</p>
                                     </div>
+
+                                    {getDeliveryInfo(order) && (
+                                        <div className="px-4 py-2.5 bg-green-50/50 rounded-xl border border-green-100/50 flex items-center justify-center md:justify-end">
+                                            <p className="text-[10px] font-black text-green-600 uppercase tracking-[0.2em] text-center md:text-right">
+                                                {getDeliveryInfo(order)}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

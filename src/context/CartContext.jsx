@@ -18,36 +18,47 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product) => {
     setCart((prev) => {
-      const found = prev.find((i) => i.name === product.name);
+      // Check for same product name AND same size
+      const found = prev.find((i) => 
+        i.name === product.name && i.selectedSize === product.selectedSize
+      );
+      
       if (found) {
         return prev.map((i) =>
-          i.name === product.name ? { ...i, qty: i.qty + 1 } : i
+          (i.name === product.name && i.selectedSize === product.selectedSize)
+            ? { ...i, qty: i.qty + (product.qty || 1) }
+            : i
         );
       }
-      return [...prev, { ...product, qty: 1 }];
+      // Use the qty passed from product page, or default to 1
+      return [...prev, { ...product, qty: product.qty || 1 }];
     });
   };
 
-  const increaseQty = (name) => {
+  const increaseQty = (name, selectedSize) => {
     setCart((prev) =>
       prev.map((i) =>
-        i.name === name ? { ...i, qty: i.qty + 1 } : i
+        (i.name === name && i.selectedSize === selectedSize) 
+          ? { ...i, qty: i.qty + 1 } 
+          : i
       )
     );
   };
 
-  const decreaseQty = (name) => {
+  const decreaseQty = (name, selectedSize) => {
     setCart((prev) =>
       prev
         .map((i) =>
-          i.name === name ? { ...i, qty: i.qty - 1 } : i
+          (i.name === name && i.selectedSize === selectedSize) 
+            ? { ...i, qty: i.qty - 1 } 
+            : i
         )
         .filter((i) => i.qty > 0)
     );
   };
 
-  const removeItem = (name) => {
-    setCart((prev) => prev.filter((i) => i.name !== name));
+  const removeItem = (name, selectedSize) => {
+    setCart((prev) => prev.filter((i) => !(i.name === name && i.selectedSize === selectedSize)));
   };
 
   const clearCart = () => setCart([]);

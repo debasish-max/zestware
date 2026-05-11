@@ -3,13 +3,15 @@ import CartItem from "../components/CartItem";
 import { ShoppingBag, ArrowRight, XCircle, ShoppingCart } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { addDays, format } from "date-fns";
 
 export default function Cart({ setToast }) {
   const { user } = useAuth();
   const { cart, total, clearCart } = useCart();
   const navigate = useNavigate();
-  const deliveryFee = cart.length > 0 ? 30 : 0;
+  const deliveryFee = cart.length > 0 ? (total >= 800 ? 0 : 50) : 0;
   const finalTotal = total + deliveryFee;
+  const deliveryDate = format(addDays(new Date(), 10), "dd MMM yyyy");
 
   if (cart.length === 0) {
     return (
@@ -51,7 +53,7 @@ export default function Cart({ setToast }) {
 
           <div className="space-y-2">
             {cart.map((item) => (
-              <CartItem key={item.name} item={item} />
+              <CartItem key={`${item.name}-${item.selectedSize}`} item={item} />
             ))}
           </div>
         </div>
@@ -68,11 +70,18 @@ export default function Cart({ setToast }) {
               </div>
               <div className="flex justify-between text-gray-500 font-bold">
                 <span>Delivery</span>
-                <span className="text-gray-800">₹{deliveryFee}</span>
+                <span className={deliveryFee === 0 ? "text-green-600" : "text-gray-800"}>
+                  {deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}
+                </span>
               </div>
-              <div className="pt-4 border-t border-gray-50 flex justify-between">
-                <span className="text-lg font-black text-gray-800">Total</span>
-                <span className="text-2xl font-black text-brand">₹{finalTotal}</span>
+              <div className="pt-4 border-t border-gray-50">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-black text-gray-800">Total</span>
+                  <span className="text-2xl font-black text-brand">₹{finalTotal}</span>
+                </div>
+                <p className="text-[10px] font-black text-green-600 uppercase tracking-[0.2em] mt-4 bg-green-50/50 w-full py-3 rounded-xl border border-green-100/50 text-center">
+                  Estimated Delivery: {deliveryDate}
+                </p>
               </div>
             </div>
 

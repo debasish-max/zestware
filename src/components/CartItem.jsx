@@ -23,21 +23,28 @@ export default function CartItem({ item }) {
           <h3 className="font-bold text-gray-800 text-lg line-clamp-1">{item.name}</h3>
           <button
             type="button"
-            onClick={() => removeItem(item.name)}
+            onClick={() => removeItem(item.name, item.selectedSize)}
             className="text-gray-300 hover:text-red-500 transition-colors"
           >
             <Trash2 size={18} />
           </button>
         </div>
         
-        <p className="text-brand font-black text-lg">₹{item.price}</p>
+        <div className="flex items-center gap-3">
+          <p className="text-brand font-black text-lg">₹{item.price}</p>
+          {item.selectedSize && (
+            <span className="text-[10px] font-black bg-gray-100 text-gray-400 px-2 py-0.5 rounded-md uppercase">
+              Size: {item.selectedSize}
+            </span>
+          )}
+        </div>
         
         <div className="flex items-center justify-between mt-3">
           {/* Quantity Controls */}
           <div className="flex items-center bg-gray-50 rounded-xl p-1 border border-gray-100">
             <button
               type="button"
-              onClick={() => decreaseQty(item.name)}
+              onClick={() => decreaseQty(item.name, item.selectedSize)}
               className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-500 transition-all active:scale-90"
             >
               <Minus size={14} />
@@ -45,7 +52,7 @@ export default function CartItem({ item }) {
             <span className="w-10 text-center font-bold text-gray-700 text-sm">{item.qty}</span>
             <button
               type="button"
-              onClick={() => increaseQty(item.name)}
+              onClick={() => increaseQty(item.name, item.selectedSize)}
               className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm text-gray-500 transition-all active:scale-90"
             >
               <Plus size={14} />

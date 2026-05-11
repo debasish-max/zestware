@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Loader2, Phone, MapPin, User, ChevronLeft, CreditCard, QrCode } from "lucide-react";
 import { getProductImage } from "../utils/imageUtils";
+import { addDays, format } from "date-fns";
 
 export default function Checkout({ setToast }) {
   const { cart, total, clearCart } = useCart();
@@ -16,8 +17,9 @@ export default function Checkout({ setToast }) {
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const deliveryFee = 30;
+  const deliveryFee = total >= 800 ? 0 : 50;
   const finalTotal = total + deliveryFee;
+  const deliveryDate = format(addDays(new Date(), 10), "dd MMM yyyy");
 
   useEffect(() => {
     if (!user) {
@@ -203,11 +205,18 @@ export default function Checkout({ setToast }) {
                 </div>
                 <div className="flex justify-between text-gray-500 font-bold">
                   <span>Delivery Fee</span>
-                  <span className="text-gray-800">₹{deliveryFee}</span>
+                  <span className={deliveryFee === 0 ? "text-green-600 font-bold" : "text-gray-800"}>
+                    {deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}
+                  </span>
                 </div>
-                <div className="pt-4 flex justify-between items-center">
-                  <span className="text-xl font-black text-gray-800">Total Amount</span>
-                  <span className="text-3xl font-black text-brand">₹{finalTotal}</span>
+                <div className="pt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xl font-black text-gray-800">Total Amount</span>
+                    <span className="text-3xl font-black text-brand">₹{finalTotal}</span>
+                  </div>
+                  <p className="text-[10px] font-black text-green-600 uppercase tracking-[0.2em] mt-4 bg-green-50/50 w-full py-3 rounded-xl border border-green-100/50 text-center">
+                    Estimated Delivery: {deliveryDate}
+                  </p>
                 </div>
               </div>
             </div>
