@@ -30,6 +30,7 @@ export default function AdminProducts({ setToast }) {
     price: "",
     description: "",
     sizes: [],
+    category: "normal",
   });
 
   useEffect(() => {
@@ -143,7 +144,8 @@ export default function AdminProducts({ setToast }) {
             price: parseFloat(form.price),
             description: form.description,
             img: finalImageUrls,
-            sizes: form.sizes
+            sizes: form.sizes,
+            category: form.category
           })
           .eq("id", editingProduct.id);
 
@@ -159,7 +161,8 @@ export default function AdminProducts({ setToast }) {
               price: parseFloat(form.price),
               description: form.description,
               img: finalImageUrls,
-              sizes: form.sizes
+              sizes: form.sizes,
+              category: form.category
             }
           ]);
 
@@ -178,7 +181,7 @@ export default function AdminProducts({ setToast }) {
   };
 
   const resetForm = () => {
-    setForm({ name: "", price: "", description: "", sizes: [] });
+    setForm({ name: "", price: "", description: "", sizes: [], category: "normal" });
     setImageFiles([]);
     setImagePreviews([]);
     setExistingImages([]);
@@ -195,7 +198,8 @@ export default function AdminProducts({ setToast }) {
       name: product.name,
       price: product.price,
       description: product.description || "",
-      sizes: product.sizes || []
+      sizes: product.sizes || [],
+      category: product.category || "normal"
     });
     setExistingImages(images);
     setImagePreviews(images);
@@ -358,6 +362,34 @@ export default function AdminProducts({ setToast }) {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-2">Category</label>
+                  <div className="flex gap-4 px-1">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="category"
+                        value="normal"
+                        checked={form.category === 'normal'}
+                        onChange={(e) => setForm({ ...form, category: e.target.value })}
+                        className="w-4 h-4 text-brand bg-gray-50 border-gray-300 focus:ring-brand focus:ring-2 cursor-pointer"
+                      />
+                      <span className="text-sm font-bold text-gray-700 group-hover:text-brand transition-colors">Normal</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="category"
+                        value="new_arrival"
+                        checked={form.category === 'new_arrival'}
+                        onChange={(e) => setForm({ ...form, category: e.target.value })}
+                        className="w-4 h-4 text-brand bg-gray-50 border-gray-300 focus:ring-brand focus:ring-2 cursor-pointer"
+                      />
+                      <span className="text-sm font-bold text-gray-700 group-hover:text-brand transition-colors">New Arrivals</span>
+                    </label>
+                  </div>
+                </div>
+
                 <div className="space-y-1">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-2">Product Images</label>
                   <div className="space-y-4">
@@ -455,6 +487,13 @@ export default function AdminProducts({ setToast }) {
                                 {s}
                               </span>
                             ))}
+                          </div>
+                        )}
+                        {product.category === 'new_arrival' && (
+                          <div className="mt-2">
+                            <span className="text-[9px] font-black bg-brand/10 text-brand px-2 py-1 rounded-md uppercase tracking-widest">
+                              New Arrival
+                            </span>
                           </div>
                         )}
                       </div>

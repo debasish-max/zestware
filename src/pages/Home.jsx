@@ -76,7 +76,46 @@ export default function Home({ setToast }) {
       <Hero />
       <FeaturedShowcase />
 
-      <section ref={collectionRef} id="collection" className="max-w-7xl mx-auto px-4 py-20">
+      {/* New Arrivals Section */}
+      {products.some(p => p.category === 'new_arrival') && (
+        <section className="relative py-20 md:py-32 overflow-hidden bg-white">
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-gray-50 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand/5 rounded-full blur-3xl opacity-50 translate-y-1/3 -translate-x-1/3 pointer-events-none" />
+          
+          <div className="max-w-7xl mx-auto px-4 relative z-10">
+            <div className="flex flex-col md:flex-row items-end justify-between mb-16 md:mb-24 gap-8">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-[3px] w-12 bg-brand"></div>
+                  <span className="text-brand font-black tracking-[0.2em] uppercase text-[10px]">Fresh Drops</span>
+                </div>
+                <h2 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-8">
+                  New<br />Arrivals.
+                </h2>
+                <p className="text-xl text-gray-500 font-medium leading-relaxed">
+                  The latest pieces to elevate your everyday rotation. Limited stock available.
+                </p>
+              </div>
+              <div className="hidden lg:flex items-center gap-4 mb-4">
+                <div className="w-16 h-[2px] bg-gray-100"></div>
+                <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">
+                  Edition 2026
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 pb-8 lg:pb-16">
+              {products.filter(p => p.category === 'new_arrival').map((p, idx) => (
+                <div key={p.id} className={`transform transition-all duration-700 hover:-translate-y-4 ${idx % 2 !== 0 ? 'lg:translate-y-16' : ''}`}>
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section ref={collectionRef} id="collection" className="max-w-7xl mx-auto px-4 py-10 md:py-20">
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
           <div>
