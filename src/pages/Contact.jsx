@@ -99,7 +99,7 @@ export default function Contact() {
         <h2 className="text-sm font-black uppercase tracking-[0.4em] text-gray-400 mb-12">Connect with us on Socials</h2>
         <div className="flex flex-wrap justify-center gap-6">
           <SocialLink icon={<Instagram size={24} />} label="Instagram" href="https://www.instagram.com/zestwearindiaofficial/" />
-          <SocialLink icon={<MessageCircle size={24} />} label="WhatsApp" href="#" />
+          <SocialLink icon={<MessageCircle size={24} />} label="WhatsApp" href="https://chat.whatsapp.com/B5rKZPNL80yCTTZmX6lkvh" />
           <SocialLink icon={<Twitter size={24} />} label="Twitter" href="#" />
         </div>
       </section>

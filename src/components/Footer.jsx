@@ -25,7 +25,7 @@ export default function Footer() {
                             </div>
                             Instagram
                         </a>
-                        <a href="" className="flex items-center gap-3 text-gray-400 hover:text-white transition-all group font-bold text-sm w-fit">
+                        <a href="https://chat.whatsapp.com/B5rKZPNL80yCTTZmX6lkvh" className="flex items-center gap-3 text-gray-400 hover:text-white transition-all group font-bold text-sm w-fit">
                             <div className="w-8 h-8 rounded-lg bg-gray-900 border border-gray-800 flex items-center justify-center group-hover:border-white group-hover:bg-white group-hover:text-black transition-all">
                                 <MessageCircle size={16} />
                             </div>
