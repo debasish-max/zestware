@@ -65,7 +65,7 @@ export default function Hero() {
         {/* Image Slider */}
         <div className="relative group">
           <div className="absolute -inset-4 bg-gray-100 rounded-[3rem] blur-2xl group-hover:bg-gray-200 transition-colors duration-500" />
-          <div className="relative aspect-[4/5] md:aspect-square overflow-hidden rounded-[2.5rem] shadow-2xl">
+          <div className="relative aspect-square overflow-hidden rounded-[2.5rem] shadow-2xl">
             {slides.map((slide, index) => (
               <div
                 key={slide}
