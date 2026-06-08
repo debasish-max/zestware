@@ -63,7 +63,7 @@ export default function Home({ setToast }) {
 
 
   const filtered = products.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase())
+    (!p.category || p.category === 'normal') && p.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const paginated = filtered.slice(
