@@ -5,9 +5,10 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import {
   ShoppingCart, ChevronLeft, ChevronRight,
-  Minus, Plus, ShieldCheck, Truck, RefreshCw
+  Minus, Plus, ShieldCheck, Truck, RefreshCw, Zap
 } from "lucide-react";
 import { getProductImage } from "../utils/imageUtils";
+import { addDays, format } from "date-fns";
 
 export default function ProductDetails({ setToast }) {
   const { id } = useParams();
@@ -21,6 +22,8 @@ export default function ProductDetails({ setToast }) {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [thumbOffset, setThumbOffset] = useState(0);
+
+  const deliveryDate = format(addDays(new Date(), 10), "dd MMM yyyy");
 
   useEffect(() => {
     fetchProduct();
@@ -73,6 +76,20 @@ export default function ProductDetails({ setToast }) {
     }
     addToCart({ ...product, selectedSize, qty: quantity });
     setToast("Added to cart!");
+  };
+
+  const handleBuyNow = () => {
+    if (!user) {
+      setToast("Please login to buy items");
+      navigate("/login");
+      return;
+    }
+    if (!selectedSize && product?.sizes?.length > 0) {
+      setToast("Please select a size");
+      return;
+    }
+    addToCart({ ...product, selectedSize, qty: quantity });
+    navigate("/checkout");
   };
 
   if (loading) {
@@ -208,15 +225,26 @@ export default function ProductDetails({ setToast }) {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex gap-3 md:gap-4 pt-4">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-brand text-white h-16 rounded-[1.25rem] font-black text-lg flex items-center justify-center gap-3 shadow-2xl shadow-brand/20 hover:bg-gray-900 transition-all active:scale-[0.98]"
+                className="flex-1 bg-white border-2 border-gray-200 text-gray-800 hover:border-brand hover:text-brand h-14 md:h-16 rounded-xl md:rounded-[1.25rem] font-black text-xs sm:text-sm md:text-lg flex items-center justify-center gap-2 md:gap-3 transition-all active:scale-[0.98] px-2 md:px-0"
               >
-                <ShoppingCart size={24} />
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 shrink-0" />
                 Add To Cart
               </button>
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 bg-brand text-white h-14 md:h-16 rounded-xl md:rounded-[1.25rem] font-black text-xs sm:text-sm md:text-lg flex items-center justify-center gap-2 md:gap-3 shadow-2xl shadow-brand/20 hover:bg-gray-900 transition-all active:scale-[0.98] px-2 md:px-0"
+              >
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 fill-white shrink-0" />
+                Buy Now
+              </button>
             </div>
+
+            <p className="text-[10px] font-black text-green-600 uppercase tracking-[0.2em] mt-4 bg-green-50/50 w-full py-3 rounded-xl border border-green-100/50 text-center">
+              Estimated Delivery: {deliveryDate}
+            </p>
 
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8 border-t border-gray-100">

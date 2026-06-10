@@ -1,11 +1,12 @@
 /* updated code for a minimal role-aware ui */
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useRef } from "react";
-import { User, LayoutDashboard, ShoppingCart, Menu, X, Package, LogOut, ChevronDown, ShieldCheck, Plus } from "lucide-react";
+import { User, LayoutDashboard, ShoppingCart, Menu, X, Package, LogOut, ChevronDown, ShieldCheck, Plus, Search } from "lucide-react";
 import { useClerk } from "@clerk/clerk-react";
-
+import { supabase } from "../lib/supabase";
+import { getProductImage } from "../utils/imageUtils";
 export default function Navbar() {
   const { uniqueCount } = useCart();
   const { user, role } = useAuth();
@@ -14,14 +15,40 @@ export default function Navbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Instant Search State
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
 
   const isAdmin = role === 'admin';
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data } = await supabase.from('products').select('*');
+      if (data) setAllProducts(data);
+    };
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const results = allProducts.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 4);
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, allProducts]);
 
   // Close menus when location changes or clicking outside
   useEffect(() => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
-  }, [location]);
+    setSearchQuery(searchParams.get('q') || '');
+  }, [location, searchParams]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -44,6 +71,28 @@ export default function Navbar() {
     }
   };
 
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (searchQuery.trim()) {
+        navigate(`/?q=${encodeURIComponent(searchQuery)}`);
+        setIsSearchFocused(false);
+        setIsMenuOpen(false);
+      } else {
+        navigate(`/`);
+      }
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    navigate(`/`);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3 md:py-4">
@@ -56,6 +105,49 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6 font-semibold text-gray-600">
+          {!isAdmin && (
+            <div className="relative group flex items-center z-50">
+              <Search className="absolute left-3 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
+              <input
+                type="text"
+                className="bg-gray-50 border border-transparent rounded-full pl-10 pr-10 py-2 w-48 lg:w-64 focus:w-64 focus:lg:w-80 focus:bg-white focus:ring-4 focus:ring-gray-100 outline-none transition-all duration-300 placeholder:text-gray-400 text-sm font-medium"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={handleSearch}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-3 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                >
+                  <X size={14} />
+                </button>
+              )}
+
+              {isSearchFocused && searchQuery && searchResults.length > 0 && (
+                <div className="absolute top-full mt-3 w-80 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 right-0 animate-in fade-in slide-in-from-top-2">
+                  {searchResults.map(p => (
+                    <Link key={p.id} to={`/product/${p.id}`} className="flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors">
+                      <img src={getProductImage(p.img)} className="w-12 h-12 rounded-xl object-cover bg-gray-100" />
+                      <div className="flex-1 overflow-hidden">
+                        <p className="text-sm font-bold text-gray-800 truncate">{p.name}</p>
+                        <p className="text-xs text-brand font-black mt-0.5">₹{p.price}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <div className="px-4 py-3 border-t border-gray-50 mt-1">
+                    <button onClick={() => navigate(`/?q=${encodeURIComponent(searchQuery)}`)} className="text-sm font-semibold text-gray-800 hover:text-brand transition-colors w-full text-center py-1">
+                      View all results &rarr;
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {isAdmin && (
             <>
               <Link
@@ -118,7 +210,7 @@ export default function Navbar() {
             </button>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-150 origin-top-right">
+              <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-150 origin-top-right z-50">
                 {user ? (
                   <>
                     <div className="px-4 py-3 mb-1 border-b border-gray-50 bg-gray-50/30">
@@ -168,6 +260,49 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-4 space-y-2 animate-in slide-in-from-top duration-200 origin-top">
+          {!isAdmin && (
+            <div className="relative mb-4 z-50">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <input
+                type="text"
+                className="w-full bg-gray-50 border border-transparent rounded-xl pl-11 pr-11 py-3 focus:bg-white focus:ring-4 focus:ring-gray-100 outline-none transition-all duration-300 placeholder:text-gray-400 font-medium text-sm"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={handleSearch}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+                >
+                  <X size={16} />
+                </button>
+              )}
+
+              {isSearchFocused && searchQuery && searchResults.length > 0 && (
+                <div className="absolute top-full mt-2 w-full bg-white border border-gray-100 rounded-2xl shadow-2xl py-2 animate-in fade-in">
+                  {searchResults.map(p => (
+                    <Link key={p.id} to={`/product/${p.id}`} className="flex items-center gap-4 px-4 py-2 hover:bg-gray-50 transition-colors">
+                      <img src={getProductImage(p.img)} className="w-10 h-10 rounded-xl object-cover bg-gray-100" />
+                      <div className="flex-1 overflow-hidden">
+                        <p className="text-sm font-bold text-gray-800 truncate">{p.name}</p>
+                        <p className="text-xs text-brand font-black mt-0.5">₹{p.price}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  <div className="px-4 py-3 border-t border-gray-50 mt-1">
+                    <button onClick={() => { setIsMenuOpen(false); navigate(`/?q=${encodeURIComponent(searchQuery)}`); }} className="text-sm font-semibold text-gray-800 hover:text-brand transition-colors w-full text-center py-1">
+                      View all results &rarr;
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {user ? (
             <>
               <div className="px-4 py-3 mb-2 border-b border-gray-50 bg-gray-50/30 rounded-2xl">
