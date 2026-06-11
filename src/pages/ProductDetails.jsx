@@ -5,7 +5,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import {
   ShoppingCart, ChevronLeft, ChevronRight,
-  Minus, Plus, ShieldCheck, Truck, RefreshCw, Zap
+  Minus, Plus, ShieldCheck, Truck, RefreshCw, Zap, ArrowLeft
 } from "lucide-react";
 import { getProductImage } from "../utils/imageUtils";
 import { addDays, format } from "date-fns";
@@ -105,12 +105,20 @@ export default function ProductDetails({ setToast }) {
   return (
     <div className="min-h-screen bg-white pb-20 pt-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-2 text-sm font-bold text-gray-400 mb-8">
-          <button onClick={() => navigate("/")} className="hover:text-brand">Home</button>
-          <span>/</span>
-          <span className="text-gray-800">{product.name}</span>
-        </nav>
+        {/* Breadcrumbs & Back Navigation */}
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 flex items-center justify-center bg-gray-50 text-gray-600 rounded-xl hover:bg-gray-100 hover:text-brand transition-all active:scale-95 border border-gray-100"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <nav className="flex items-center gap-2 text-sm font-bold text-gray-400">
+            <button onClick={() => navigate("/")} className="hover:text-brand transition-colors">Home</button>
+            <span>/</span>
+            <span className="text-gray-800">{product.name}</span>
+          </nav>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Left: Image Gallery */}

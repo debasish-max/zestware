@@ -13,6 +13,7 @@ export default function Navbar() {
   const { signOut } = useClerk();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const profileRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ export default function Navbar() {
   useEffect(() => {
     setIsMenuOpen(false);
     setIsProfileOpen(false);
+    setIsMobileSearchOpen(false);
     setSearchQuery(searchParams.get('q') || '');
   }, [location, searchParams]);
 
@@ -96,16 +98,16 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3 md:py-4">
-        <Link to="/" className="group flex items-center gap-3">
-          <img src="/zw.png" alt="ZW Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform" />
-          <h1 className="text-2xl md:text-3xl font-black text-brand tracking-tighter">
+        <Link to="/" className="group flex items-center gap-1.5 md:gap-2">
+          <img src="/zw.png" alt="ZW Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform shrink-0" />
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-brand tracking-tighter">
             ZESTWEAR
           </h1>
         </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6 font-semibold text-gray-600">
-          {!isAdmin && (
+          {!isAdmin && location.pathname === '/' && (
             <div className="relative group flex items-center z-50">
               <Search className="absolute left-3 text-gray-400 group-focus-within:text-brand transition-colors" size={18} />
               <input
@@ -238,8 +240,16 @@ export default function Navbar() {
 
         {/* Mobile Toggle & Actions */}
         <div className="md:hidden flex items-center gap-3">
+          {!isAdmin && location.pathname === '/' && (
+            <button
+              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              className={`p-2.5 rounded-xl transition-all ${isMobileSearchOpen ? 'bg-gray-200 text-gray-800' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
+            >
+              <Search size={22} />
+            </button>
+          )}
           {!isAdmin && (
-            <Link to="/cart" className="relative p-2.5 rounded-xl bg-gray-50 text-gray-600">
+            <Link to="/cart" className="relative p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors">
               <ShoppingCart size={22} />
               {uniqueCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-brand text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow-sm ring-2 ring-white font-bold">
@@ -257,52 +267,56 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Floating Mobile Search Bar */}
+      {!isAdmin && location.pathname === '/' && (
+        <div className={`md:hidden absolute top-full left-0 w-full px-4 pt-2 pb-4 z-40 transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right ${isMobileSearchOpen ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' : 'opacity-0 scale-[0.97] -translate-y-3 pointer-events-none'}`}>
+          <div className="relative z-50">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              className="w-full bg-white border border-gray-100 rounded-xl pl-11 pr-11 py-3 shadow-lg focus:border-gray-300 outline-none transition-all duration-300 placeholder:text-gray-400 font-medium text-base"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={handleSearch}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+              autoComplete="off"
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+              >
+                <X size={16} />
+              </button>
+            )}
+
+            {isSearchFocused && Boolean(searchQuery) && searchResults.length > 0 ? (
+              <div className="absolute top-full mt-2 w-full bg-white border border-gray-100 rounded-2xl shadow-2xl py-2 animate-in fade-in">
+                {searchResults.map(p => (
+                  <Link key={p.id} to={`/product/${p.id}`} className="flex items-center gap-4 px-4 py-2 hover:bg-gray-50 transition-colors">
+                    <img src={getProductImage(p.img)} className="w-10 h-10 rounded-xl object-cover bg-gray-100" />
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-sm font-bold text-gray-800 truncate">{p.name}</p>
+                      <p className="text-xs text-brand font-black mt-0.5">₹{p.price}</p>
+                    </div>
+                  </Link>
+                ))}
+                <div className="px-4 py-3 border-t border-gray-50 mt-1">
+                  <button onClick={() => { setIsMenuOpen(false); navigate(`/?q=${encodeURIComponent(searchQuery)}`); }} className="text-sm font-semibold text-gray-800 hover:text-brand transition-colors w-full text-center py-1">
+                    View all results &rarr;
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
+
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-4 space-y-2 animate-in slide-in-from-top duration-200 origin-top">
-          {!isAdmin && (
-            <div className="relative mb-4 z-50">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-transparent rounded-xl pl-11 pr-11 py-3 focus:bg-white focus:ring-4 focus:ring-gray-100 outline-none transition-all duration-300 placeholder:text-gray-400 font-medium text-sm"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={handleSearch}
-                onKeyDown={handleKeyDown}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-              />
-              {searchQuery && (
-                <button
-                  onClick={clearSearch}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                >
-                  <X size={16} />
-                </button>
-              )}
-
-              {isSearchFocused && searchQuery && searchResults.length > 0 && (
-                <div className="absolute top-full mt-2 w-full bg-white border border-gray-100 rounded-2xl shadow-2xl py-2 animate-in fade-in">
-                  {searchResults.map(p => (
-                    <Link key={p.id} to={`/product/${p.id}`} className="flex items-center gap-4 px-4 py-2 hover:bg-gray-50 transition-colors">
-                      <img src={getProductImage(p.img)} className="w-10 h-10 rounded-xl object-cover bg-gray-100" />
-                      <div className="flex-1 overflow-hidden">
-                        <p className="text-sm font-bold text-gray-800 truncate">{p.name}</p>
-                        <p className="text-xs text-brand font-black mt-0.5">₹{p.price}</p>
-                      </div>
-                    </Link>
-                  ))}
-                  <div className="px-4 py-3 border-t border-gray-50 mt-1">
-                    <button onClick={() => { setIsMenuOpen(false); navigate(`/?q=${encodeURIComponent(searchQuery)}`); }} className="text-sm font-semibold text-gray-800 hover:text-brand transition-colors w-full text-center py-1">
-                      View all results &rarr;
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
           {user ? (
             <>
               <div className="px-4 py-3 mb-2 border-b border-gray-50 bg-gray-50/30 rounded-2xl">

@@ -9,7 +9,7 @@ export default function Cart({ setToast }) {
   const { user } = useAuth();
   const { cart, total, clearCart } = useCart();
   const navigate = useNavigate();
-  const deliveryFee = cart.length > 0 ? (total >= 800 ? 0 : 50) : 0;
+  const deliveryFee = cart.length > 0 ? (total >= 1300 ? 0 : 50) : 0;
   const finalTotal = total + deliveryFee;
   const deliveryDate = format(addDays(new Date(), 10), "dd MMM yyyy");
 
@@ -21,8 +21,8 @@ export default function Cart({ setToast }) {
         </div>
         <h2 className="text-3xl font-black text-gray-800 mb-2">Your cart is empty</h2>
         <p className="text-gray-500 mb-8 text-center max-w-xs">Looks like you haven't added anything to your cart yet.</p>
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="bg-brand text-white px-8 py-4 rounded-2xl font-bold hover:scale-105 transition-transform shadow-lg shadow-brand/20 flex items-center gap-2"
         >
           Go to Shop
@@ -42,7 +42,7 @@ export default function Cart({ setToast }) {
               Your Cart
               <span className="text-lg font-bold text-gray-400">({cart.length})</span>
             </h2>
-            <button 
+            <button
               onClick={clearCart}
               className="text-red-500 font-bold text-sm flex items-center gap-1 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
             >
@@ -62,7 +62,7 @@ export default function Cart({ setToast }) {
         <div className="w-full md:w-[350px]">
           <div className="bg-white border border-gray-100 rounded-3xl p-6 sticky top-24 shadow-sm">
             <h3 className="text-xl font-black text-gray-800 mb-6">Order Summary</h3>
-            
+
             <div className="space-y-4 mb-8">
               <div className="flex justify-between text-gray-500 font-bold">
                 <span>Subtotal</span>
