@@ -17,7 +17,7 @@ export default function Checkout({ setToast }) {
   const [address, setAddress] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const deliveryFee = total >= 800 ? 0 : 50;
+  const deliveryFee = total >= 1300 ? 0 : 50;
   const finalTotal = total + deliveryFee;
   const deliveryDate = format(addDays(new Date(), 10), "dd MMM yyyy");
 

@@ -12,7 +12,7 @@ export default function Contact() {
             GET IN <span className="text-brand italic">TOUCH</span>
           </h1>
           <p className="text-xl text-gray-400 font-medium max-w-2xl mx-auto leading-relaxed">
-            Have a question about an order, a business inquiry, or just want to say hello? 
+            Have a question about an order, a business inquiry, or just want to say hello?
             Our team is here to help you.
           </p>
         </div>
@@ -21,22 +21,22 @@ export default function Contact() {
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-24 -mt-16 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Contact Information Cards */}
           <div className="space-y-6">
-            <ContactInfoCard 
+            <ContactInfoCard
               icon={<Mail className="text-brand" size={24} />}
               title="Email Us"
               value="zestwearindia@gmail.com"
               subtitle="We usually respond within 24 hours."
             />
-            <ContactInfoCard 
+            <ContactInfoCard
               icon={<Phone className="text-brand" size={24} />}
               title="Call Us"
-              value="+91 70021 37717"
+              value="+91 69011 88826"
               subtitle="Mon-Sat, 10am - 7pm IST"
             />
-            <ContactInfoCard 
+            <ContactInfoCard
               icon={<MapPin className="text-brand" size={24} />}
               title="Visit Us"
               value="Jorhat, Assam, India"
@@ -122,8 +122,8 @@ function ContactInfoCard({ icon, title, value, subtitle }) {
 
 function SocialLink({ icon, label, href }) {
   return (
-    <a 
-      href={href} 
+    <a
+      href={href}
       className="flex items-center gap-3 px-8 py-4 bg-white rounded-2xl border border-gray-100 hover:border-brand hover:text-brand transition-all font-black text-sm shadow-sm hover:shadow-md group"
     >
       <span className="group-hover:scale-110 transition-transform">{icon}</span>
