@@ -16,6 +16,7 @@ export default function ProductCard({ product }) {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
           onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=No+Image'; }}
+          loading="lazy"
         />
       </div>
 

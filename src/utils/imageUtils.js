@@ -1,9 +1,15 @@
+const optimizeCloudinaryUrl = (url) => {
+  if (typeof url !== 'string' || !url.includes('res.cloudinary.com')) return url;
+  if (url.includes('/upload/f_auto,q_auto/')) return url;
+  return url.replace('/upload/', '/upload/f_auto,q_auto/');
+};
+
 export const getProductImage = (img) => {
   if (!img) return 'https://via.placeholder.com/400?text=No+Image';
   
   // If it's already an array, return the first element
   if (Array.isArray(img)) {
-    return img[0] || 'https://via.placeholder.com/400?text=No+Image';
+    return optimizeCloudinaryUrl(img[0]) || 'https://via.placeholder.com/400?text=No+Image';
   }
   
   // If it's a string, it might be a direct URL or a JSON-encoded array
@@ -13,15 +19,15 @@ export const getProductImage = (img) => {
       try {
         const parsed = JSON.parse(img);
         if (Array.isArray(parsed)) {
-          return parsed[0] || 'https://via.placeholder.com/400?text=No+Image';
+          return optimizeCloudinaryUrl(parsed[0]) || 'https://via.placeholder.com/400?text=No+Image';
         }
       } catch (e) {
         // Not valid JSON, treat as direct URL
-        return img;
+        return optimizeCloudinaryUrl(img);
       }
     }
     // Direct URL
-    return img;
+    return optimizeCloudinaryUrl(img);
   }
   
   return 'https://via.placeholder.com/400?text=No+Image';
@@ -31,7 +37,7 @@ export const getAllProductImages = (img) => {
   if (!img) return [];
   
   if (Array.isArray(img)) {
-    return img;
+    return img.map(optimizeCloudinaryUrl);
   }
   
   if (typeof img === 'string') {
@@ -39,13 +45,13 @@ export const getAllProductImages = (img) => {
       try {
         const parsed = JSON.parse(img);
         if (Array.isArray(parsed)) {
-          return parsed;
+          return parsed.map(optimizeCloudinaryUrl);
         }
       } catch (e) {
-        return [img];
+        return [optimizeCloudinaryUrl(img)];
       }
     }
-    return [img];
+    return [optimizeCloudinaryUrl(img)];
   }
   
   return [];

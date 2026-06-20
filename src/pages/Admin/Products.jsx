@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ConfirmModal from "../../components/ConfirmModal";
-import { getProductImage } from "../../utils/imageUtils";
+import { getProductImage, getAllProductImages } from "../../utils/imageUtils";
 
 export default function AdminProducts({ setToast }) {
   const [products, setProducts] = useState([]);
@@ -55,16 +55,6 @@ export default function AdminProducts({ setToast }) {
     }
   };
 
-  const getImagesAsArray = (img) => {
-    if (!img) return [];
-    if (Array.isArray(img)) return img;
-    if (typeof img === 'string' && img.startsWith('[')) {
-      try {
-        return JSON.parse(img);
-      } catch (e) { }
-    }
-    return [img];
-  };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -105,21 +95,32 @@ export default function AdminProducts({ setToast }) {
   };
 
   const uploadImage = async (file) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-    const filePath = `product-images/${fileName}`;
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-    const { error: uploadError } = await supabase.storage
-      .from('products')
-      .upload(filePath, file);
+    if (!cloudName || !uploadPreset) {
+      throw new Error("Cloudinary configuration is missing in .env");
+    }
 
-    if (uploadError) throw uploadError;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+    
+    // Optional: Ask Cloudinary to automatically optimize format and quality
+    formData.append("fetch_format", "auto");
+    formData.append("quality", "auto");
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('products')
-      .getPublicUrl(filePath);
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: "POST",
+      body: formData,
+    });
 
-    return publicUrl;
+    if (!response.ok) {
+      throw new Error("Failed to upload image to Cloudinary");
+    }
+
+    const data = await response.json();
+    return data.secure_url;
   };
 
   const handleSubmit = async (e) => {
@@ -192,7 +193,7 @@ export default function AdminProducts({ setToast }) {
   };
 
   const startEdit = (product) => {
-    const images = getImagesAsArray(product.img);
+    const images = getAllProductImages(product.img);
     setEditingProduct(product);
     setForm({
       name: product.name,
@@ -455,7 +456,7 @@ export default function AdminProducts({ setToast }) {
                     <div
                       className="w-24 h-24 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 relative cursor-pointer group/img"
                       onClick={() => {
-                        const imgs = getImagesAsArray(product.img);
+                        const imgs = getAllProductImages(product.img);
                         setViewingImages(imgs);
                       }}
                     >
@@ -464,11 +465,12 @@ export default function AdminProducts({ setToast }) {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=No+Image'; }}
+                        loading="lazy"
                       />
-                      {getImagesAsArray(product.img).length > 1 && (
+                      {getAllProductImages(product.img).length > 1 && (
                         <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-1.5 py-0.5 rounded-lg flex items-center gap-1">
                           <ImageIcon size={10} />
-                          {getImagesAsArray(product.img).length}
+                          {getAllProductImages(product.img).length}
                         </div>
                       )}
                       <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover/img:opacity-100">
@@ -563,7 +565,7 @@ export default function AdminProducts({ setToast }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pr-2 custom-scrollbar">
               {viewingImages.map((img, idx) => (
                 <div key={idx} className="rounded-3xl overflow-hidden aspect-square bg-gray-900 border border-white/10 group">
-                  <img src={img} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  <img src={img} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
                 </div>
               ))}
             </div>

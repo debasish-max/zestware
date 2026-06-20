@@ -99,7 +99,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto flex justify-between items-center px-4 py-3 md:py-4">
         <Link to="/" className="group flex items-center gap-1.5 md:gap-2">
-          <img src="/zw.png" alt="ZW Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform shrink-0" />
+          <img src="/zw.webp" alt="ZW Logo" className="w-10 h-10 md:w-12 md:h-12 object-contain group-hover:scale-110 transition-transform shrink-0" />
           <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-brand tracking-tighter">
             ZESTWEAR
           </h1>

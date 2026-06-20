@@ -251,6 +251,7 @@ export default function AdminOrders({ setToast }) {
                                                             src={getProductImage(item.img)}
                                                             alt={item.name}
                                                             className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                            loading="lazy"
                                                         />
                                                         {getAllProductImages(item.img).length > 1 && (
                                                             <div className="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-white text-[8px] font-black px-1 py-0.5 rounded-md flex items-center gap-1">
@@ -316,6 +317,7 @@ export default function AdminOrders({ setToast }) {
                                             src={img}
                                             alt={`Preview ${idx + 1}`}
                                             className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-700"
+                                            loading="lazy"
                                         />
                                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity" />
                                     </div>

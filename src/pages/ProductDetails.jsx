@@ -7,7 +7,7 @@ import {
   ShoppingCart, ChevronLeft, ChevronRight,
   Minus, Plus, ShieldCheck, Truck, RefreshCw, Zap, ArrowLeft
 } from "lucide-react";
-import { getProductImage } from "../utils/imageUtils";
+import { getProductImage, getAllProductImages } from "../utils/imageUtils";
 import { addDays, format } from "date-fns";
 
 export default function ProductDetails({ setToast }) {
@@ -52,16 +52,7 @@ export default function ProductDetails({ setToast }) {
     }
   };
 
-  const getImages = (img) => {
-    if (!img) return [];
-    if (Array.isArray(img)) return img;
-    if (typeof img === 'string' && img.startsWith('[')) {
-      try { return JSON.parse(img); } catch (e) { }
-    }
-    return [img];
-  };
-
-  const images = getImages(product?.img);
+  const images = getAllProductImages(product?.img);
   const visibleThumbs = images.slice(thumbOffset, thumbOffset + 4);
 
   const handleAddToCart = () => {

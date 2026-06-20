@@ -180,6 +180,7 @@ export default function Checkout({ setToast }) {
                         alt={item.name}
                         className="w-full h-full object-cover"
                         onError={(e) => { e.target.src = 'https://via.placeholder.com/400?text=No+Image'; }}
+                        loading="lazy"
                       />
                     </div>
                     <div>
